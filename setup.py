@@ -43,8 +43,13 @@ For detailed description, see the project GitHub page.
 This software is distributed under the Apache 2.0 license.
 """,
     
+    install_requires = [
+        "jinja2>=2.6"
+    ],
+
     packages = find_packages(),
     scripts = SCRIPT_FILES,
+
     include_package_data = True,
 )
 

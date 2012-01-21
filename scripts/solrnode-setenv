@@ -1,0 +1,30 @@
+#!/usr/bin/env python
+#
+#
+# Sets various global environment settings used by the framework
+#
+import os
+import sys
+import logging
+from optparse import OptionParser
+
+import pkg_resources
+
+def parse_args():
+	usage = "%prog <var_name>=<value> [<var_name_2>=<value_2> ...]"
+	parser = OptionParser(usage=usage)
+
+	options, args = parser.parse_args()
+	if not args:
+		parser.error("Invalid arguments. Use -h for usage instructions.")
+
+	return options, args
+
+
+def main():
+	options, args = parse_args()
+
+	return 0
+
+if __name__ == "__main__":
+	sys.exit(main())

@@ -9,7 +9,8 @@ package & deploy these templates, and use them to create any number of runnable 
 
 To use the framework, you will need the following:
 
-* [Tomcat](http://tomcat.apache.org/index.html) - Java Servlet container 
+* a Java Servlet container - Currently we support[Tomcat](http://tomcat.apache.org/index.html), however in the future this can be extended
+  for other servers (e.g Jetty).
 * [Solr](http://lucene.apache.org/solr/) - You will need to have the solr .WAR file available and visible to your servlet container
 
 ## Installation
@@ -23,6 +24,12 @@ This will by default install all the framework scripts into your global python e
 them available in your system PATH. 
 You could also potentially install the framework under a Python [virtualenv](http://pypi.python.org/pypi/virtualenv).
 
+You will also need to tell the framework where your default solr.war file is. You only need to do this once,
+and this location will be symlinked by the instances. To do so:
+
+```bash
+solrnode-setenv solr_war=<solr_war_file_location>
+```
 
 ## Example Usage
 
@@ -39,8 +46,7 @@ running standalone (e.g not as different cores under the same java servlet serve
 
 	After running these commands, you will end up with a directory per template type, containing a skeleton configuration
 	that you can then tweak to your heart's desire.
-	The resulting files are still not usable in themselves - you'll notice various properties in the .xml files use a template language markup
-	to provide stubs for values that are injected by the framework later on, when creating instances from the template. (More on this below)
+	The resulting files are still not usable in themselves - you'll notice various properties in the various .tmpl files use a template language markup (the excellent [Jinja2](http://jinja.pocoo.org/) - Do not change these, as they are handled by the framework later on when instantiating templates.
 
 	You can also drop in template-specific solr plugins (JAR files) under the template's lib/ sub-directory.
 
