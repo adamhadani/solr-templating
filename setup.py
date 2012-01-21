@@ -45,6 +45,9 @@ This software is distributed under the Apache 2.0 license.
     
     packages = find_packages(),
     scripts = SCRIPT_FILES,
-    include_package_data = True
+    include_package_data = True,
+    #package_data = {
+    #    'solrnode': [ 'templates/*.xml' ]
+    #}
 )
 
