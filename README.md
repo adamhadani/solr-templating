@@ -80,6 +80,14 @@ Assuming all previous templates are in current working dir:
 
 Each script can be invoked with the -h flag to show detailed usage instructions.
 
+## Development
+
+If you'd like to contribute to / fork this project, bear in mind that for generating your own
+source distributions you'd have to make sure setuptools (or distribute) picks up all the package
+data files, specifically the default template we supply. Since setuptools by default uses VCS bindings
+to identify tracked data files in order to decide which ones to include or not, you will want to have
+the git setuptools package installed: [setuptools-git](http://pypi.python.org/pypi/setuptools-git)
+
 ## Credits
 
 solrnode-utils was created by [Adam Ever-Hadani](http://github.com/adamhadani/)
