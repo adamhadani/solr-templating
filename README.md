@@ -26,13 +26,13 @@ running standalone (e.g not as different cores under the same java servlet serve
 	```bash
 	solrnode-create-tmpl -t people-search
 	solrnode-create-tmpl -t item-search
-	solrnode-create-tmpl -t 
+	solrnode-create-tmpl -t backend-search 
 	```
 
 	After running these commands, you will end up with a directory per template type, containing a skeleton configuration
 	that you can then tweak to your heart's desire.
-	The resulting files are still not usable in themselves - you'll notice various properties use a template language markup
-	to provide stubs for some values that are injected by the framework when creating instances from the template. More on this below.
+	The resulting files are still not usable in themselves - you'll notice various properties in the .xml files use a template language markup
+	to provide stubs for values that are injected by the framework later on, when creating instances from the template. (More on this below)
 
 	You can also drop in template-specific solr plugins (JAR files) under the template's lib/ sub-directory.
 
