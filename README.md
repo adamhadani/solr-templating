@@ -8,8 +8,9 @@ package & deploy these templates, and use them to create any number of runnable 
 ## Installation
 
 To install the framework, use the included setup.py, e.g:
-
+```bash
 python setup.py install
+```
 
 This will by default install all the framework scripts into your global python environment, making
 them available in your system PATH. 
