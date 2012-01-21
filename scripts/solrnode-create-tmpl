@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python
 #
 #  Licensed under the Apache License, Version 2.0 (the "License"); 
 #  you may not use this file except in compliance with the License. 
@@ -15,3 +15,61 @@
 #
 # Create a new skeleton template directory tree
 #
+import os
+import sys
+import glob
+import shutil
+import logging
+from optparse import OptionParser
+
+import pkg_resources
+
+
+def parse_args():
+    usage = "%prog [-t <template_type>] <template_name> [<template_2_name> <template_3_name> ...]"
+    parser = OptionParser(usage=usage)
+
+    tmpls_dir = pkg_resources.resource_filename('solrnode', 'templates')
+    templates = map(os.path.basename,glob.glob(tmpls_dir+"/*"))
+    
+    parser.add_option("-t", "--template-type", dest="tmpl_type", default='default',
+            help="Template type (Templates available: {0})".format(', '.join(templates)))
+
+    options, args = parser.parse_args()
+    
+    if not args:
+        parser.error("Must supply template name to create. Use -h for usage instructions.")
+ 
+    return parser, (options, args)
+
+
+def main():
+    parser, (options, args) = parse_args()
+    logging.basicConfig(
+        level = logging.INFO,
+        format = "%(levelname)s - %(message)s"
+    )
+
+    tmpl_type_dir = pkg_resources.resource_filename('solrnode',
+        os.path.join('templates', options.tmpl_type))
+
+    if not os.path.isdir(tmpl_type_dir):
+        parser.error("Supplied template type is invalid.")
+
+    for tmpl_name in args:
+        tmpl_dir = tmpl_name
+        logging.info("Creating template '%s' [template_type: %s]", tmpl_name, options.tmpl_type)
+        try:
+            shutil.copytree(tmpl_type_dir, tmpl_name)
+        except OSError, exc:
+            logging.error("Directory '%s' already exists, not creating template for this name.", 
+                tmpl_name)
+        except Error, exc:
+            logging.error("Could not create directory for template '%s'. Check that you have sufficient disk space.",
+                tmpl_name)
+    
+    logging.info("All done.")
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())
