@@ -1,0 +1,4 @@
+#!/bin/bash
+#
+# Create a deployable package of given template directories.
+#

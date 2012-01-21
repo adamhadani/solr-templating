@@ -1,0 +1,4 @@
+#!/bin/bash
+#
+# Control runtime (start/stop/status/kill) of solr instances managed by the framework
+#
