@@ -5,6 +5,13 @@
 solrnode-utils is a framework which encompasses a few Python and shell scripts that allow you to create templates of solr-backed search services,
 package & deploy these templates, and use them to create any number of runnable instances on a production environment.
 
+## Requirements
+
+To use the framework, you will need the following:
+
+* [Tomcat](http://tomcat.apache.org/index.html) - Java Servlet container 
+* [Solr](http://lucene.apache.org/solr/) - You will need to have the solr .WAR file available and visible to your servlet container
+
 ## Installation
 
 To install the framework, use the included setup.py, e.g:
