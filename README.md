@@ -1,9 +1,20 @@
 # solrnode-utils
 
-## A set of utility scripts for templating solr configurations and working with multi-instance solr installations
+### A set of utility scripts for templating solr configurations and working with multi-instance solr installations
 
-solrnode-utils encompasses a few Python and shell scripts that allow you to create templates of solr-backed search services,
-package & deploy these templates, and use them to create any number of runnable instances.
+solrnode-utils is a framework which encompasses a few Python and shell scripts that allow you to create templates of solr-backed search services,
+package & deploy these templates, and use them to create any number of runnable instances on a production environment.
+
+## Installation
+
+To install the framework, use the included setup.py, e.g:
+
+python setup.py install
+
+This will by default install all the framework scripts into your global python environment, making
+them available in your system PATH. 
+You could also potentially install the framework under a Python virtualenv.
+
 
 ## Example Usage
 
@@ -12,7 +23,7 @@ running standalone (e.g not as different cores under the same java servlet serve
 
 * You would create 3 template directory trees for these:
 
-``` bash
+```
 solrnode-create-tmpl -t people-search
 solrnode-create-tmpl -t item-search
 solrnode-create-tmpl -t 
