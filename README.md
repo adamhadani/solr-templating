@@ -13,7 +13,7 @@ python setup.py install
 
 This will by default install all the framework scripts into your global python environment, making
 them available in your system PATH. 
-You could also potentially install the framework under a Python virtualenv.
+You could also potentially install the framework under a Python [virtualenv](http://pypi.python.org/pypi/virtualenv).
 
 
 ## Example Usage
