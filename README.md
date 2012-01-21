@@ -2,8 +2,8 @@
 
 ## A set of utility scripts for templating solr configurations and working with multi-instance solr installations
 
-solrnode-utils encompasses a few Python and shell scripts that allow you to create templates of solr-backed search node bundles,
-and reuse those templates to create any number of instantiations of these templates.
+solrnode-utils encompasses a few Python and shell scripts that allow you to create templates of solr-backed search services,
+package & deploy these templates, and use them to create any number of runnable instances.
 
 ## Example Usage
 
