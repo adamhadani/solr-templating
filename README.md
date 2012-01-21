@@ -12,7 +12,8 @@ running standalone (e.g not as different cores under the same java servlet serve
 
 * You would create 3 template directory trees for these:
 
-```solrnode-create-tmpl -t people-search
+``` bash
+solrnode-create-tmpl -t people-search
 solrnode-create-tmpl -t item-search
 solrnode-create-tmpl -t 
 ```
