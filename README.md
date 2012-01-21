@@ -23,7 +23,7 @@ running standalone (e.g not as different cores under the same java servlet serve
 
 * You would create 3 template directory trees for these:
 
-```
+```bash
 solrnode-create-tmpl -t people-search
 solrnode-create-tmpl -t item-search
 solrnode-create-tmpl -t 
@@ -42,7 +42,9 @@ The resulting directory structure makes up your development tree - you can (and 
 be included (identified by their directory location in local file system). 
 Assuming all previous templates are in current working dir:
 
-```solrnode-create-pkg *-search```
+```bash
+solrnode-create-pkg *-search
+```
 
 This will result in a .tgz file containing all specified templates, stamped with the current timestamp and username by default.
 
@@ -54,13 +56,15 @@ Once deployed, the templates become globally available to the framework, and you
 So for example, if for the purposes of some logical sharding you would need to create multiple instances from a single service template, 
 you could create these with different names and ports, e.g:
 
-```solrnode-create-inst -t people-search-01 -p 8081
+```bash
+solrnode-create-inst -t people-search-01 -p 8081
 solrnode-create-inst -t people-search-02 -p 8082
 ```
 
 To start or stop an instance, as well as get current status of a named instance, you can then use:
 
-```solrnode-ctl start people-search-01
+```bash
+solrnode-ctl start people-search-01
 solrnode-ctl status people-search-01
 solrnode-ctl stop people-search-01
 ```
