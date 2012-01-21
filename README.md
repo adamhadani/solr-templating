@@ -9,13 +9,14 @@ package & deploy these templates, and use them to create any number of runnable 
 
 To use the framework, you will need the following:
 
-* a Java Servlet container - Currently we support[Tomcat](http://tomcat.apache.org/index.html), however in the future this can be extended
+* a Java Servlet container - Currently we support [Tomcat](http://tomcat.apache.org/index.html), however in the future this can be extended
   for other servers (e.g Jetty).
 * [Solr](http://lucene.apache.org/solr/) - You will need to have the solr .WAR file available and visible to your servlet container
 
 ## Installation
 
 To install the framework, use the included setup.py, e.g:
+
 ```bash
 python setup.py install
 ```
