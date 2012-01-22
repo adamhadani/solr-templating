@@ -54,7 +54,7 @@ running standalone (e.g not as different cores under the same java servlet serve
 
 	The resulting directory structure makes up your development tree - you can (and probably should) check it in your VCS.
 
-	You can now create runnable instances based on your templates.
+*	You can now create runnable instances based on your templates.
     For example, for the purposes of some logical sharding you might want to create multiple instances from a single service template, 
 	and you can create these with different names and ports, e.g:
 
@@ -64,7 +64,7 @@ running standalone (e.g not as different cores under the same java servlet serve
 	solrnode-create-inst -t item-search -i item-search-00 tomcat.port=8090 tomcat.shutdown_port=18090
 	```
 
-	To start or stop an instance, as well as get current status of a named instance, you can use the 
+*	To start or stop an instance, as well as get current status of a named instance, you can use the 
     solrnode-ctl. This command essentially provides the needed environment and wraps around a launcher.
     Currently, we support both 'plain' tomcat execution (delegating to the catalina.sh script), as well
     as using supervisord. For the latter, you will need to seperately configure your own supervisord.conf
