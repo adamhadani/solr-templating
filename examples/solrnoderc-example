@@ -1,0 +1,5 @@
+[fs]
+catalina_home = /usr/local/tomcat
+solr_war_file = /usr/local/solr/dist/apache-solr-3.5.0.war
+instances_base_dir = /home/tomcat/solrnode-instances
+templates_base_dir = /home/tomcat/solrnode-templates
