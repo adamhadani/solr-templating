@@ -24,19 +24,41 @@ import logging
 from contextlib import closing
 from optparse import OptionParser
 
-from jinja2 import Template
+import jinja2
 
+from solrnode.env import SolrNodeEnv, TemplateManifest
 
 def render_templates(inst_dir, env):
     """Walk over instance dir, and render every .tmpl file into
     target file, interpolating environment as needed"""
+
+    # Set up template engine environment and default behavior
+    jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(
+        inst_dir), undefined=jinja2.StrictUndefined)
+    
+    manifest = TemplateManifest.from_file(os.path.join(inst_dir, 
+                    '.template_manifest'))
+
     for root, dirnames, filenames in os.walk(inst_dir):
         for filename in fnmatch.filter(filenames, '*.tmpl'):
-            with closing(open(os.path.join(root, filename), "r")) as ifh:
-                with closing(open(os.path.join(root, filename[:-5]), "w")) as ofh:
-                    logging.debug("Rendering template '%s'", filename)
-                    Template(ifh.read()).stream(**env).dump(ofh)
+            with closing(open(os.path.join(root, filename[:-5]), "w")) as ofh:
+                logging.debug("Rendering template '%s'", filename)
+                try:
+                    tmpl_path = os.path.relpath(os.path.join(root, filename), inst_dir)
+                    jinja_env.get_template(tmpl_path).stream(**env).dump(ofh)
+                except OSError, exc:
+                    logging.exception("OSError while rendering template file %s, aborting.:",
+                                      filename)
+                    return 1
+                except jinja2.exceptions.UndefinedError, exc:
+                    logging.error("UndefinedError: This template requires several variable definitions, " \
+                                  "some of which were missing. For a list of required variables, use " \
+                                  "solrnode-describe-tmpl. Error message was: %s", exc)
+                    return 1
+                   
             os.remove(os.path.join(root, filename))
+
+    return 0
 
 def instance_from_tmpl_dir(tmpl_dir, instance):
     """Create instance directory given template directory
@@ -44,7 +66,7 @@ def instance_from_tmpl_dir(tmpl_dir, instance):
     try:
         shutil.copytree(tmpl_dir, instance)
     except OSError:
-        logging.error("Directory '%s' already exists. Remove it first to create instance.", instance)
+        logging.error("Directory '%s' already exists. Use --force to override.", instance)
         sys.exit(1)
     else:
         return instance
@@ -72,9 +94,9 @@ def main():
     parser, (options, args) = parse_args()
    
     # Parse environment variables given
-    env = dict(map(lambda x: x.split("="), args))
-    env['tomcat'] = {'port': '8081', 'shutdown_port': '18081'}
-    env['fs'] = {'solr_home': '/usr/local/solr', 'solr_war_file': '/usr/local/solr/solr.war'}
+    env = SolrNodeEnv()
+    env.update_user_args(args)
+    #env['tomcat'] = {'port': '8081', 'shutdown_port': '18081'}
 
     if os.path.isdir(options.instance) and options.force:
         logging.warn("Directory '%s' already exists and --force flag given, purging existing directory", 
@@ -89,15 +111,19 @@ def main():
         # Template given is a file, verify valid package
         if not options.template.endswith('.tgz') and \
           not options.template.endswith('.tar.gz'):
-            parser.error("Invalid package file. Packages must be valid .tar.gz files.")
+            parser.error("Invalid package file. Packages must be .tar.gz files.")
 
     else:
         # Check if template name exists in global template repository
         parser.error("Must supply valid template name. Use -h for usage instructions.")
 
-    logging.info("Rendering templates in instance directory...")
-    render_templates(options.instance, env)
-
+    logging.info("Rendering template files in instance directory...")
+    ret = render_templates(options.instance, env)
+    if ret != 0:
+        # Error encountered while rendering instance, get
+        # read of any temporary artifacts
+        shutil.rmtree(options.instance)
+        
     logging.info("All done.")
 
 

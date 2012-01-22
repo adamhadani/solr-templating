@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+"""Describe a template using its .template_manifest"""
+
+import os
+import sys
+import logging
+from optparse import OptionParser
+
+from solrnode.env import TemplateManifest
+
+def parse_args():
+	usage = "%prog <template_name_or_dir>"
+	parser = OptionParser(usage=usage)
+	
+	options, args = parser.parse_args()	
+	return parser, (options, args)
+
+def main():
+	parser, (options, args) = parse_args()
+	
+	if not args:
+		parser.error("Must supply template name. Use -h for usage instructions.")
+		
+	for template in args:
+		if not os.path.isdir(template):
+			logging.error("Template '%s' does not exist, skipping", template)
+			continue
+		elif not os.path.exists(os.path.join(template, '.template_manifest')):
+			logging.error("Could not find .template_manifest for template '%s', skipping",
+						template)
+			continue
+		
+		manifest = TemplateManifest.from_file(os.path.join(
+				template, '.template_manifest'))
+		
+		print manifest
+		
+	return 0
+	
+if __name__ == "__main__":
+	sys.exit(main())

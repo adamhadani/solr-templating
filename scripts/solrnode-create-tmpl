@@ -19,11 +19,15 @@ import os
 import sys
 import glob
 import shutil
+import getpass
 import logging
+import datetime
+from contextlib import closing
 from optparse import OptionParser
 
 import pkg_resources
-
+from jinja2 import Template
+import jinja2.exceptions
 
 def parse_args():
     usage = "%prog [-t <template_type>] <template_name> [<template_2_name> <template_3_name> ...]"
@@ -67,7 +71,20 @@ def main():
         except Error, exc:
             logging.error("Could not create directory for template '%s'. Check that you have sufficient disk space.",
                 tmpl_name)
-    
+            
+        # Inject needed defaults into template manifest
+        manifest_env = {
+            'template_name': tmpl_name,
+            'author_name': getpass.getuser(),
+            'created_on': datetime.datetime.now()
+        }
+        
+        with closing(open(os.path.join(tmpl_name, '.template_manifest.tmpl'), "r")) as ifh:
+            with closing(open(os.path.join(tmpl_name, '.template_manifest'), "w")) as ofh:
+                Template(ifh.read()).stream(**manifest_env).dump(ofh)
+        
+        os.remove(os.path.join(tmpl_name, '.template_manifest.tmpl'))
+        
     logging.info("All done.")
     return 0
 

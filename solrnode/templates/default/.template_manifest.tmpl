@@ -1,0 +1,19 @@
+#
+# template manifest file.
+#
+# This is used by the framework when instantiating
+# a template to keep track of dependencies and any
+# required definitions.
+#
+# You should add definitions here to reflect your template.
+#
+[metadata]
+name: {{ template_name }}
+author: {{ author_name }}
+created_on: {{ created_on }}
+
+[required_vars]
+0: fs.solr_war_file
+1: fs.catalina_home
+2: tomcat.port
+3: tomcat.shutdown_port
