@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python
 #
 #  Licensed under the Apache License, Version 2.0 (the "License"); 
 #  you may not use this file except in compliance with the License. 
@@ -13,5 +13,6 @@
 #  limitations under the License. 
 #
 #
-# Control runtime (start/stop/status/kill) of solr instances managed by the framework
-#
+"""Control runtime (start/stop/status/kill) of solr instances managed by the framework"""
+import os
+import sys

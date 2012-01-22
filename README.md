@@ -25,12 +25,13 @@ This will by default install all the framework scripts into your global python e
 them available in your system PATH. 
 You could also potentially install the framework under a Python [virtualenv](http://pypi.python.org/pypi/virtualenv).
 
-You will also need to tell the framework where your default solr.war file is. You only need to do this once,
-and this location will be symlinked by the instances. To do so:
+## Connfiguration
 
-```bash
-solrnode-setenv solr_war=<solr_war_file_location>
-```
+There is a basic configuration that needs to exist before we can do anything.
+The framework will look for the configuration file in /etc/solrnoderc and in ~/.solrnoderc.
+An example for a minimal configuration file is provided under the examples/ dir. Once in place,
+this will tell the framework where to find tomcat, solr.war and what are the base directories
+that will hold all templates / instances created.
 
 ## Example Usage
 
@@ -49,9 +50,46 @@ running standalone (e.g not as different cores under the same java servlet serve
 	that you can then tweak to your heart's desire.
 	The resulting files are still not usable in themselves - you'll notice various properties in the various .tmpl files use a template language markup (the excellent [Jinja2](http://jinja.pocoo.org/) - Do not change these, as they are handled by the framework later on when instantiating templates.
 
-	You can also drop in template-specific solr plugins (JAR files) under the template's lib/ sub-directory.
+	You can also drop in template-specific files (static configuration, JAR files, etc.) that should be bundled along..
 
 	The resulting directory structure makes up your development tree - you can (and probably should) check it in your VCS.
+
+	You can now create runnable instances based on your templates.
+    For example, for the purposes of some logical sharding you might want to create multiple instances from a single service template, 
+	and you can create these with different names and ports, e.g:
+
+	```bash
+	solrnode-create-inst -t people-search -i people-search-01 tomcat.port=8081 tomcat.shutdown_port=18081
+	solrnode-create-inst -t people-search -i people-search-02 tomcat.port=8082 tomcat.shutdown_port=18082
+	solrnode-create-inst -t item-search -i item-search-00 tomcat.port=8090 tomcat.shutdown_port=18090
+	```
+
+	To start or stop an instance, as well as get current status of a named instance, you can use the 
+    solrnode-ctl. This command essentially provides the needed environment and wraps around a launcher.
+    Currently, we support both 'plain' tomcat execution (delegating to the catalina.sh script), as well
+    as using supervisord. For the latter, you will need to seperately configure your own supervisord.conf
+    file and make sure supervisord daemon is running properly. So, for example, assuming you configured supervisord with
+    the tomcat/solr service using the same names as you used for the instances, you would simply invoke solrnode-ctl thus:
+
+	```bash
+	solrnode-ctl --supervisord start people-search-01
+	solrnode-ctl --supervisord status people-search-01
+	solrnode-ctl --supervisord stop people-search-01
+	```
+
+	There is also a solrnode-ctl 'kill' command to brutally chop off any rogue instance that has not properly shut off earlier.
+	This can happen as result of various resource freeing related issues, and involves clearing out any remaining PID/lock files etc.
+
+## Packaging
+
+A more realistic setting is one where you would be developing and testing templates and instances in one environment,
+and then push out ready templates to your production environment, and instantiate them there.
+The framework takes care of that aspect as well by introducing the notion of template packages. These allow you
+to quickly tie up an arbitrary selection of local templates into a single distributable (.tar.gz file).
+This file can then be installed on the target host using the solrnode-install-pkg command.
+Notice that this means you would need solrnode-utils installed on both your development as well as production environments.
+
+Example use case:
 
 * Create a deployable package containing your templates. To create one, you simply pass all templates that should
 be included (identified by their directory location in local file system). 
@@ -70,25 +108,6 @@ Assuming all previous templates are in current working dir:
 	```
 
 	Once deployed, the templates become globally available to the framework, and you can create any number of runnable instances based on them. 
-	So for example, if for the purposes of some logical sharding you would need to create multiple instances from a single service template, 
-	you could create these with different names and ports, e.g:
-
-	```bash
-	solrnode-create-inst -t people-search-01 -p 8081
-	solrnode-create-inst -t people-search-02 -p 8082
-	```
-
-	To start or stop an instance, as well as get current status of a named instance, you can then use:
-
-	```bash
-	solrnode-ctl start people-search-01
-	solrnode-ctl status people-search-01
-	solrnode-ctl stop people-search-01
-	```
-
-	There is also a solrnode-ctl 'kill' command to brutally chop off any rogue instance that has not properly shut off earlier.
-	This can happen as result of various resource freeing related issues, and involves clearing out any remaining PID/lock files etc.
-
 
 ## Documentation
 
