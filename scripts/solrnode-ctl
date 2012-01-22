@@ -16,3 +16,5 @@
 """Control runtime (start/stop/status/kill) of solr instances managed by the framework"""
 import os
 import sys
+
+from solrnode.env import SolrNodeEnv

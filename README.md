@@ -38,7 +38,7 @@ that will hold all templates / instances created.
 Suppose you have 3 different solr-backed services which are part of your infrastructure, that need to each be
 running standalone (e.g not as different cores under the same java servlet server).
 
-* You would create 3 template directory trees for these:
+* Create 3 template directory trees for these:
 
 	```bash
 	solrnode-create-tmpl -t people-search
@@ -48,9 +48,9 @@ running standalone (e.g not as different cores under the same java servlet serve
 
 	After running these commands, you will end up with a directory per template type, containing a skeleton configuration
 	that you can then tweak to your heart's desire.
-	The resulting files are still not usable in themselves - you'll notice various properties in the various .tmpl files use a template language markup (the excellent [Jinja2](http://jinja.pocoo.org/) - Do not change these, as they are handled by the framework later on when instantiating templates.
+	The resulting files are still not usable in themselves - you'll notice various properties in the .tmpl files use a template language markup (the excellent [Jinja2](http://jinja.pocoo.org/)) - Do not change these, as they are handled by the framework later on when instantiating templates.
 
-	You can also drop in template-specific files (static configuration, JAR files, etc.) that should be bundled along..
+	You can also drop in template-specific files (static configuration, JAR files, etc.) that should be bundled along as well.
 
 	The resulting directory structure makes up your development tree - you can (and probably should) check it in your VCS.
 
