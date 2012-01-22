@@ -51,9 +51,9 @@ def render_templates(inst_dir, env):
                                       filename)
                     return 1
                 except jinja2.exceptions.UndefinedError, exc:
-                    logging.error("UndefinedError: This template requires several variable definitions, " \
+                    logging.error("UndefinedError [%s]: This template requires several variable definitions, " \
                                   "some of which were missing. For a list of required variables, use " \
-                                  "solrnode-describe-tmpl. Error message was: %s", exc)
+                                  "solrnode-describe-tmpl. Error message was: %s", filename, exc)
                     return 1
                    
             os.remove(os.path.join(root, filename))
@@ -96,8 +96,7 @@ def main():
     # Parse environment variables given
     env = SolrNodeEnv()
     env.update_user_args(args)
-    #env['tomcat'] = {'port': '8081', 'shutdown_port': '18081'}
-
+    
     if os.path.isdir(options.instance) and options.force:
         logging.warn("Directory '%s' already exists and --force flag given, purging existing directory", 
             options.instance)
