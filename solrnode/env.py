@@ -25,6 +25,9 @@ class SolrNodeEnv(dict):
     def __init__(self):
         super(dict, self).__init__()
         
+        # This will hold auto-generated environment settings
+        self['_env'] = {}
+        
         self.update_conf_files(_rc_locations)
         
     def update_conf_files(self, filenames):

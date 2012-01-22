@@ -60,18 +60,6 @@ def render_templates(inst_dir, env):
 
     return 0
 
-def instance_from_tmpl_dir(tmpl_dir, instance):
-    """Create instance directory given template directory
-    and enviroment (key, value) tuples to interpolate"""
-    try:
-        shutil.copytree(tmpl_dir, instance)
-    except OSError:
-        logging.error("Directory '%s' already exists. Use --force to override.", instance)
-        sys.exit(1)
-    else:
-        return instance
-
-
 def parse_args():
     usage = "%prog -t <template_name_or_dir_or_tgz> -i <instance_name> tomcat.port=<port> [env_var=<value> ...]"
     parser = OptionParser(usage=usage)
@@ -96,15 +84,24 @@ def main():
     # Parse environment variables given
     env = SolrNodeEnv()
     env.update_user_args(args)
-    
-    if os.path.isdir(options.instance) and options.force:
+
+    inst_dir = os.path.join(env['fs']['instances_base_dir'],
+                        options.instance)
+
+    env['_env']['solr_home'] = os.path.join(inst_dir, 'solr-home')
+        
+    # If directory exists and force flag provided, purge
+    if os.path.isdir(inst_dir) and options.force:
         logging.warn("Directory '%s' already exists and --force flag given, purging existing directory", 
-            options.instance)
-        shutil.rmtree(options.instance)
+            inst_dir)
+        shutil.rmtree(inst_dir)
 
     if os.path.isdir(options.template):
         # Template is a directory in local fs
-        instance_from_tmpl_dir(options.template, options.instance)
+        try:
+            shutil.copytree(options.template, inst_dir)
+        except OSError, exc:
+            parser.error("Directory '%s' already exists. Use --force to override." % inst_dir)
 
     elif os.path.exists(options.template):
         # Template given is a file, verify valid package
@@ -117,11 +114,11 @@ def main():
         parser.error("Must supply valid template name. Use -h for usage instructions.")
 
     logging.info("Rendering template files in instance directory...")
-    ret = render_templates(options.instance, env)
+    ret = render_templates(inst_dir, env)
     if ret != 0:
         # Error encountered while rendering instance, get
         # read of any temporary artifacts
-        shutil.rmtree(options.instance)
+        shutil.rmtree(inst_dir)
         
     logging.info("All done.")
 
