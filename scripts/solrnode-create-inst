@@ -67,6 +67,11 @@ def parse_args():
         help="Template to use for creating instance. Can be template name, path to template dir, or .tgz package containing template")
     parser.add_option("-i", "--instance", dest="instance",
         help="Instance name to be created")
+    parser.add_option("--instances-base-dir", dest="instances_base_dir",
+                      help="Instances base dir to install instance into.")
+    parser.add_option("--templates-base-dir", dest="templates_base_dir",
+                      help="Templates base dir to install templates into.")
+       
     parser.add_option("-f", "--force", dest="force", action="store_true", default=False,
         help="Force creation of new instance, even if directory exists")
 
@@ -89,9 +94,15 @@ def main():
     env = SolrNodeEnv()
     env.update_user_args(args)
 
-    inst_dir = os.path.join(env['fs']['instances_base_dir'],
-                        options.instance)
+    try:
+        instances_base_dir = options.instances_base_dir or \
+            env['fs']['instances_base_dir']
+    except KeyError, exc:
+        parser.error("fs.instances_base_dir is not defined. See --help for usage instructions.")
 
+    inst_dir = os.path.join(instances_base_dir,
+                    options.instance)
+            
     env['_env']['solr_home'] = os.path.join(inst_dir, 'solr-home')
         
     # If directory exists and force flag provided, purge
@@ -101,7 +112,7 @@ def main():
         shutil.rmtree(inst_dir)
 
     if os.path.isdir(options.template):
-        # Template is a directory in local fs
+        # Template given is a path directory in local fs
         try:
             shutil.copytree(options.template, inst_dir)
         except OSError, exc:
@@ -115,7 +126,21 @@ def main():
 
     else:
         # Check if template name exists in global template repository
-        parser.error("Must supply valid template name. Use -h for usage instructions.")
+        try:
+            templates_base_dir = options.templates_base_dir or \
+                env['fs']['templates_base_dir']
+        except KeyError, exc:
+            parser.error("fs.templates_base_dir is not defined. Use --help for usage instructions.")
+            
+        tmpl_dir = os.path.join(templates_base_dir, options.template)
+        if not os.path.isdir(tmpl_dir):
+            parser.error("Must supply valid template name. Use -h for usage instructions.")
+        try:
+            shutil.copytree(tmpl_dir, inst_dir)
+        except OSError, exc:
+            parser.error("Directory '%s' already exists. Use --force to override." % \
+                         inst_dir)
+
 
     logging.info("Rendering template files in instance directory...")
     ret = render_templates(inst_dir, env)

@@ -19,13 +19,20 @@ import sys
 import logging
 from optparse import OptionParser
 
-from solrnode.env import TemplateManifest
+from solrnode.env import TemplateManifest, SolrNodeEnv
 
 def parse_args():
 	usage = "%prog <template_name_or_dir>"
 	parser = OptionParser(usage=usage)
 	
+	parser.add_option("--templates-base-dir", dest="templates_base_dir",
+					  help="Templates base dir where templates are installed.")
+	
 	options, args = parser.parse_args()	
+	
+	if not args:
+		parser.error("Must supply template name. Use -h for usage instructions.")
+		
 	return parser, (options, args)
 
 def main():
@@ -35,20 +42,31 @@ def main():
 		format = "%(levelname)s - %(message)s"
 	)
 	
-	if not args:
-		parser.error("Must supply template name. Use -h for usage instructions.")
-		
+	env = SolrNodeEnv()
+   
 	for template in args:
-		if not os.path.isdir(template):
+		tmpl_dir = template
+		if not os.path.isdir(tmpl_dir):
+			# Not in current path, try global templates repository
+			try:
+				templates_base_dir = options.templates_base_dir or \
+					env['fs']['templates_base_dir']
+			except KeyError, exc:
+					parser.error("fs.template_base_dir is not defined. Use --help for usage instructions.")
+			else:
+				tmpl_dir = os.path.join(templates_base_dir, template)
+			 
+		if not os.path.isdir(tmpl_dir):
 			logging.error("Template '%s' does not exist, skipping", template)
 			continue
-		elif not os.path.exists(os.path.join(template, '.template_manifest')):
+		
+		elif not os.path.exists(os.path.join(tmpl_dir, '.template_manifest')):
 			logging.error("Could not find .template_manifest for template '%s', skipping",
 						template)
 			continue
 		
 		manifest = TemplateManifest.from_file(os.path.join(
-				template, '.template_manifest'))
+				tmpl_dir, '.template_manifest'))
 		
 		print manifest
 		
