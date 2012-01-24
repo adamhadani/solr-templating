@@ -1,0 +1,75 @@
+#!/usr/bin/env python
+#
+#  Licensed under the Apache License, Version 2.0 (the "License"); 
+#  you may not use this file except in compliance with the License. 
+#  You may obtain a copy of the License at 
+#  
+#      http://www.apache.org/licenses/LICENSE-2.0 
+#     
+#  Unless required by applicable law or agreed to in writing, software 
+#  distributed under the License is distributed on an "AS IS" BASIS, 
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+#  See the License for the specific language governing permissions and 
+#  limitations under the License. 
+#
+"""Install a template into the template repository directory"""
+
+import os
+import sys
+import shutil
+import logging
+from optparse import OptionParser
+
+from solrnode.env import SolrNodeEnv, TemplateManifest
+
+
+def parse_args():
+    usage = "%prog  <template_dir> [<template_dir_2> ...]"
+    parser = OptionParser(usage=usage)
+
+    parser.add_option("-f", "--force", dest="force", action="store_true", default=False,
+        help="Force re-installation of a template, even if preivously existed")
+
+    options, args = parser.parse_args()
+    
+    if not args:
+        parser.error("Must supply at least one template to install. Use -h for usage instructions.")
+    
+    return parser, (options, args)
+
+
+def main():
+    parser, (options, args) = parse_args()
+    logging.basicConfig(
+        level = logging.INFO,
+        format = "%(levelname)s - %(message)s"
+    )
+   
+    # Parse environment variables given
+    env = SolrNodeEnv()
+   
+    for template_dir in args:
+        install_dir = os.path.join(env['fs']['templates_base_dir'],
+                                   template_dir)
+        
+        if not os.path.isdir(template_dir):
+            logging.error("Invalid template directory '%s', skipping", template_dir)
+            continue
+        if options.force and os.path.exists(install_dir):
+            logging.warning("Template '%s' already installed, purging existing...",
+                           os.path.basename(template_dir))
+            shutil.rmtree(install_dir)
+        
+        logging.info("Installing template '%s'...", os.path.basename(template_dir))
+        try:
+            shutil.copytree(template_dir, install_dir)
+        except OSError, exc:
+            logging.error("OSError while trying to install template '%s', use --force to override existing.", 
+                              os.path.basename(template_dir))
+            
+    logging.info("All done.")
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())
+

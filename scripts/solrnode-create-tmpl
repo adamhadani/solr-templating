@@ -68,25 +68,27 @@ def main():
         except OSError, exc:
             logging.error("Directory '%s' already exists, not creating template for this name.", 
                 tmpl_name)
+            return 1
         except Error, exc:
             logging.error("Could not create directory for template '%s'. Check that you have sufficient disk space.",
                 tmpl_name)
+            return 1
+        else:    
+            # Inject needed defaults into template manifest
+            manifest_env = {
+                'template_name': tmpl_name,
+                'author_name': getpass.getuser(),
+                'created_on': datetime.datetime.now()
+            }
             
-        # Inject needed defaults into template manifest
-        manifest_env = {
-            'template_name': tmpl_name,
-            'author_name': getpass.getuser(),
-            'created_on': datetime.datetime.now()
-        }
-        
-        with closing(open(os.path.join(tmpl_name, '.template_manifest.tmpl'), "r")) as ifh:
-            with closing(open(os.path.join(tmpl_name, '.template_manifest'), "w")) as ofh:
-                Template(ifh.read()).stream(**manifest_env).dump(ofh)
-        
-        os.remove(os.path.join(tmpl_name, '.template_manifest.tmpl'))
-        
-    logging.info("All done.")
-    return 0
+            with closing(open(os.path.join(tmpl_name, '.template_manifest.tmpl'), "r")) as ifh:
+                with closing(open(os.path.join(tmpl_name, '.template_manifest'), "w")) as ofh:
+                    Template(ifh.read()).stream(**manifest_env).dump(ofh)
+            
+            os.remove(os.path.join(tmpl_name, '.template_manifest.tmpl'))
+            
+        logging.info("All done.")
+        return 0
 
 if __name__ == "__main__":
     sys.exit(main())
