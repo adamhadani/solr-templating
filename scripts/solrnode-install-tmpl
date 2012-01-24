@@ -30,6 +30,9 @@ def parse_args():
     parser.add_option("-f", "--force", dest="force", action="store_true", default=False,
         help="Force re-installation of a template, even if preivously existed")
 
+    parser.add_option("--templates-base-dir", dest="templates_base_dir",
+                      help="Templates base dir to install into.")
+    
     options, args = parser.parse_args()
     
     if not args:
@@ -47,11 +50,16 @@ def main():
    
     # Parse environment variables given
     env = SolrNodeEnv()
-   
-    for template_dir in args:
-        install_dir = os.path.join(env['fs']['templates_base_dir'],
-                                   template_dir)
+    try:
+        templates_base_dir = options.templates_base_dir or \
+            env['fs']['templates_base_dir']
+    except KeyError, exc:
+            parser.error("fs.template_base_dir is not defined. Use --help for usage instructions.")
         
+    for template_dir in args:
+        install_dir = os.path.join(templates_base_dir,
+                               template_dir)
+            
         if not os.path.isdir(template_dir):
             logging.error("Invalid template directory '%s', skipping", template_dir)
             continue
