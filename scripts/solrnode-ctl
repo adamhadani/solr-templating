@@ -16,5 +16,48 @@
 """Control runtime (start/stop/status/kill) of solr instances managed by the framework"""
 import os
 import sys
+import subprocess
 
 from solrnode.env import SolrNodeEnv
+
+def parse_args():
+    usage = "%prog <start|stop|status|kill> <instance_name>"
+    parser = OptionParser(usage=usage)
+    
+    parser.add_option("--templates-base-dir", dest="templates_base_dir",
+                      help="Templates base dir where templates are installed.")
+    
+    options, args = parser.parse_args()    
+    
+    if not args or len(args) > 2:
+        parser.error("Invalid number of arguments. Use -h for usage instructions.")
+        
+    return parser, (options, args)
+
+def main():
+    parser, (options, args) = parse_args()
+    logging.basicConfig(
+        level = logging.INFO,
+        format = "%(levelname)s - %(message)s"
+    )
+    
+    env = SolrNodeEnv()
+    catalina_home = env['fs']['catalina_home']
+    
+    os.environ['CATALINA_BASE'] = os.path.join(
+        instances_base_dir,
+        args[1],
+        'catalina-base'
+    )
+    
+    cmd = args[0]
+    if cmd in ('start', 'stop'):
+        subprocess.call([
+            os.path.join(catalina_home, 'bin', 'catalina.sh'),
+            cmd
+            ])
+        
+    return 0
+    
+if __name__ == "__main__":
+    sys.exit(main())
