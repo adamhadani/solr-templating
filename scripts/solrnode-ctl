@@ -17,6 +17,8 @@
 import os
 import sys
 import subprocess
+from optparse import OptionParser
+import logging
 
 from solrnode.env import SolrNodeEnv
 
@@ -24,12 +26,12 @@ def parse_args():
     usage = "%prog <start|stop|status|kill> <instance_name>"
     parser = OptionParser(usage=usage)
     
-    parser.add_option("--templates-base-dir", dest="templates_base_dir",
-                      help="Templates base dir where templates are installed.")
+    parser.add_option("--instances-base-dir", dest="instances_base_dir",
+                      help="Instances base dir where instances are installed.")
     
     options, args = parser.parse_args()    
     
-    if not args or len(args) > 2:
+    if len(args) != 2:
         parser.error("Invalid number of arguments. Use -h for usage instructions.")
         
     return parser, (options, args)
@@ -43,12 +45,15 @@ def main():
     
     env = SolrNodeEnv()
     catalina_home = env['fs']['catalina_home']
+    instances_base_dir = options.instances_base_dir or \
+        env['fs']['instances_base_dir']
+    catalina_opts = env['tomcat']['catalina_opts']
     
     os.environ['CATALINA_BASE'] = os.path.join(
-        instances_base_dir,
-        args[1],
-        'catalina-base'
-    )
+        instances_base_dir, args[1], 'catalina-base')
+    os.environ['CATALINA_PID'] = os.path.join(
+        os.environ['CATALINA_BASE'], 'catalina.pid')
+    os.environ['CATALINA_OPTS'] = catalina_opts
     
     cmd = args[0]
     if cmd in ('start', 'stop'):
