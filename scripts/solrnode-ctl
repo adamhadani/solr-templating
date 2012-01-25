@@ -21,7 +21,7 @@ from optparse import OptionParser
 import logging
 
 from solrnode.env import SolrNodeEnv
-from solrnode.ctl import SolrNodeCtl
+from solrnode.ctl import TomcatNodeCtl, SupervisordNodeCtl
     
 def parse_args():
     usage = "%prog <start|stop|status|kill> <instance_name>"
@@ -29,6 +29,10 @@ def parse_args():
     
     parser.add_option("--instances-base-dir", dest="instances_base_dir",
                       help="Instances base dir where instances are installed.")
+    
+    parser.add_option("--supervisord", dest="supervisord",
+                      action="store_true", default=False,
+                      help="Delegate runtime control to supervisord")
     
     options, args = parser.parse_args()    
     
@@ -53,9 +57,20 @@ def main():
     catalina_home = env['fs']['catalina_home']
     catalina_opts = env['tomcat']['catalina_opts']
         
-    ctlobj = SolrNodeCtl(instances_base_dir=instances_base_dir,
-            instance_name=instance_name, catalina_home=catalina_home,
-            catalina_opts=catalina_opts)
+    ctlobj = None
+    if options.supervisord:
+        # Using supervisord for running service
+        ctlobj = SupervisordNodeCtl(instances_base_dir=instances_base_dir,
+                instance_name=instance_name, catalina_home=catalina_home,
+                catalina_opts=catalina_opts)
+        
+    else:
+        # By default, currently we fallback to tomcat runtime
+        # semantics
+        ctlobj = TomcatNodeCtl(instances_base_dir=instances_base_dir,
+                instance_name=instance_name, catalina_home=catalina_home,
+                catalina_opts=catalina_opts)
+    
     ret = {
         "start": ctlobj.start,
         "stop": ctlobj.stop,

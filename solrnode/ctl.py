@@ -16,14 +16,79 @@
 
 import os
 import subprocess
+from abc import abstractmethod, ABCMeta
 
-class SolrNodeCtl(object):
-    """Encapsulate environment
-    and logic for controlling service
-    runtime"""
+class NodeCtl(object):
+    """Base class for defining
+    a control proxy"""
+    
+    __metaclass__ = ABCMeta
     
     def __init__(self, **opts):
         self.opts = opts
+        
+    @abstractmethod
+    def setenv(self):
+        """Set any (OS) environment variables
+        that need to be set before invoking"""
+        
+    @abstractmethod
+    def start(self):
+        pass
+        
+    @abstractmethod
+    def stop(self):
+        pass
+        
+    @abstractmethod
+    def status(self):
+        pass
+        
+    @abstractmethod
+    def kill(self):
+        pass
+        
+class SupervisordNodeCtl(NodeCtl):
+    """Encapsulate environment and logic for
+    controlling service using supervisord"""
+    
+    def __init__(self, **opts):
+        super(SupervisordNodeCtl, self).__init__(**opts)
+        
+    def setenv(self):
+        os.environ['CATALINA_BASE'] = os.path.join(
+            self.opts['instances_base_dir'], self.opts['instance_name'], 
+            'catalina-base')
+        os.environ['CATALINA_PID'] = os.path.join(
+            os.environ['CATALINA_BASE'], 'catalina.pid')
+        os.environ['CATALINA_OPTS'] = self.opts['catalina_opts']
+    
+    def start(self):
+        return self.supervisorctl('start')
+    
+    def stop(self):
+        return self.supervisorctl('stop')
+        
+    def status(self):
+        return self.supervisorctl('status')
+        
+    def kill(self):
+        return self.supervisorctl('kill')
+        
+    def supervisorctl(self, cmd):
+        return subprocess.call([
+            "supervisorctl", 
+            cmd,
+            self.opts['instance_name']
+            ])
+        
+        
+class TomcatNodeCtl(NodeCtl):
+    """Encapsulate environment and logic for controlling 
+    tomcat service runtime"""
+    
+    def __init__(self, **opts):
+        super(SupervisordNodeCtl, self).__init__(**opts)
         
         self.setenv()
         
