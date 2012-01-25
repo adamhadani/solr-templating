@@ -21,7 +21,8 @@ from optparse import OptionParser
 import logging
 
 from solrnode.env import SolrNodeEnv
-
+from solrnode.ctl import SolrNodeCtl
+    
 def parse_args():
     usage = "%prog <start|stop|status|kill> <instance_name>"
     parser = OptionParser(usage=usage)
@@ -44,25 +45,26 @@ def main():
     )
     
     env = SolrNodeEnv()
-    catalina_home = env['fs']['catalina_home']
     instances_base_dir = options.instances_base_dir or \
         env['fs']['instances_base_dir']
+
+    cmd, instance_name = args
+
+    catalina_home = env['fs']['catalina_home']
     catalina_opts = env['tomcat']['catalina_opts']
-    
-    os.environ['CATALINA_BASE'] = os.path.join(
-        instances_base_dir, args[1], 'catalina-base')
-    os.environ['CATALINA_PID'] = os.path.join(
-        os.environ['CATALINA_BASE'], 'catalina.pid')
-    os.environ['CATALINA_OPTS'] = catalina_opts
-    
-    cmd = args[0]
-    if cmd in ('start', 'stop'):
-        subprocess.call([
-            os.path.join(catalina_home, 'bin', 'catalina.sh'),
-            cmd
-            ])
         
-    return 0
+    ctlobj = SolrNodeCtl(instances_base_dir=instances_base_dir,
+            instance_name=instance_name, catalina_home=catalina_home,
+            catalina_opts=catalina_opts)
+    ret = {
+        "start": ctlobj.start,
+        "stop": ctlobj.stop,
+        "status": ctlobj.status,
+        "kill": ctlobj.kill
+    }[cmd]()
+    
+    return ret
     
 if __name__ == "__main__":
     sys.exit(main())
+    
