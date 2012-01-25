@@ -88,7 +88,7 @@ class TomcatNodeCtl(NodeCtl):
     tomcat service runtime"""
     
     def __init__(self, **opts):
-        super(SupervisordNodeCtl, self).__init__(**opts)
+        super(TomcatNodeCtl, self).__init__(**opts)
         
         self.setenv()
         
