@@ -54,6 +54,14 @@ running standalone (e.g not as different cores under the same java servlet serve
 
 	The resulting directory structure makes up your development tree - you can (and probably should) check it in your VCS.
 
+*   Once you're happy with a template and would like to make it available so that runnable instances can be spawned
+    based on that template, you will want to install it. The framework maintains a global template repository in the
+    local filesystem (configured via the solrnoderc file). To install a template, invoke solrctl-install-tmpl:
+
+    ```bash
+    solrnode-install-tmpl people-search
+    ```
+
 *	You can now create runnable instances based on your templates.
     For example, for the purposes of some logical sharding you might want to create multiple instances from a single service template, 
 	and you can create these with different names and ports, e.g:
