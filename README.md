@@ -25,7 +25,7 @@ This will by default install all the framework scripts into your global python e
 them available in your system PATH. 
 You could also potentially install the framework under a Python [virtualenv](http://pypi.python.org/pypi/virtualenv).
 
-## Connfiguration
+## Configuration
 
 There is a basic configuration that needs to exist before we can do anything.
 The framework will look for the configuration file in /etc/solrnoderc and in ~/.solrnoderc.
