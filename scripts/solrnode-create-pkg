@@ -36,7 +36,7 @@ def parse_args():
 	options, args = parser.parse_args()
 	
 	if not args:
-		parser.error("Must specify at least one template to package. See --help for usage instructions.")
+		parser.error("Must specify at least one template to package. Use --help for usage instructions.")
 	return parser, (options, args)
 	
 def main():
@@ -58,17 +58,15 @@ def main():
 	pkg_name = "{0}-{1}-{2}.tar.gz".format(
 		args[0], datetime.now().strftime("%Y-%m-%d_%H:%M:%S"), getpass.getuser())
 	
-	ofh = tarfile.open(pkg_name, mode="w:gz")
-	
-	logging.info("Creating package '%s'...", pkg_name)
-	
-	with cwd(templates_base_dir):
-		for arg in args:
-			arg_dir = arg
-			ofh.add(arg_dir)
+	with tarfile.open(pkg_name, mode="w:gz") as ofh:	
+		logging.info("Creating package '%s'...", pkg_name)
 		
-	ofh.close()
-	
+		with cwd(templates_base_dir):
+			for arg in args:
+				arg_dir = arg
+				ofh.add(arg_dir)
+			
+
 	logging.info("All done.")
 	
 if __name__ == "__main__":

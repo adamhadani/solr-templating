@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python
 #
 #  Licensed under the Apache License, Version 2.0 (the "License"); 
 #  you may not use this file except in compliance with the License. 
@@ -13,5 +13,58 @@
 #  limitations under the License. 
 #
 #
-# Install a template package created by solrnode-create-pkg on a target environment
-#
+"""Install a package created by solrnode-create-pkg on a target environment"""
+import os
+import sys
+import tarfile
+import getpass
+import logging
+from datetime import datetime
+from optparse import OptionParser
+
+from solrnode.env import cwd, SolrNodeEnv, TemplateManifest
+
+def parse_args():
+	usage = "%prog [--templates-base-dir <dir>] <package>"
+	parser = OptionParser(usage=usage)
+	
+	parser.add_option("--instances-base-dir", dest="instances_base_dir",
+					  help="Instances base dir to install instance into.")
+	parser.add_option("--templates-base-dir", dest="templates_base_dir",
+					  help="Templates base dir to install templates into.")
+	
+	options, args = parser.parse_args()
+	
+	if len(args) != 1:
+		parser.error("Must specify package to install. Use --help for usage instructions.")
+	return parser, (options, args)
+	
+def main():
+	parser, (options, args) = parse_args()
+	logging.basicConfig(
+		level = logging.INFO,
+		format = "%(levelname)s - %(message)s"
+	)
+   
+	# Parse environment variables given
+	env = SolrNodeEnv()
+
+	try:
+		templates_base_dir = options.templates_base_dir or \
+			env['fs']['templates_base_dir']
+	except KeyError, exc:
+		parser.error("fs.templates_base_dir is not defined. Use --help for usage instructions.")
+		
+	pkg_name = args[0]
+	with tarfile.open(pkg_name, mode="r:gz") as ifh:	
+		logging.info("Extracting package '%s'...", pkg_name)
+		
+		with cwd(templates_base_dir):
+			ifh.extractall()
+
+	
+	logging.info("All done.")
+	
+if __name__ == "__main__":
+	sys.exit(main())
+
