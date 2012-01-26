@@ -17,6 +17,7 @@
 import os
 import sys
 import operator
+from contextlib import contextmanager
 from itertools import imap
 from ConfigParser import SafeConfigParser
 
@@ -26,6 +27,15 @@ _rc_locations = [
     '{0}/.solrnoderc'.format(_home)
 ]
 
+@contextmanager
+def cwd(path):
+    """A context manager which changes the working directory to the given
+    path, and then changes it back to its previous value on exit"""
+    prev_cwd = os.getcwd()
+    os.chdir(path)
+    yield
+    os.chdir(prev_cwd)
+    
 class SolrNodeEnv(dict):
     """Encapsulates the environment
     as used by the framework. This is typified

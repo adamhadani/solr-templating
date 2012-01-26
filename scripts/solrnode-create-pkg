@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env python
 #
 #  Licensed under the Apache License, Version 2.0 (the "License"); 
 #  you may not use this file except in compliance with the License. 
@@ -13,5 +13,63 @@
 #  limitations under the License. 
 #
 #
-# Create a deployable package of given template directories.
-#
+"""Create a deployable package of given template directories"""
+import os
+import sys
+import tarfile
+import getpass
+import logging
+from datetime import datetime
+from optparse import OptionParser
+
+from solrnode.env import cwd, SolrNodeEnv, TemplateManifest
+
+def parse_args():
+	usage = "%prog <template> [<template_2> ...]"
+	parser = OptionParser(usage=usage)
+	
+	parser.add_option("--instances-base-dir", dest="instances_base_dir",
+					  help="Instances base dir to install instance into.")
+	parser.add_option("--templates-base-dir", dest="templates_base_dir",
+					  help="Templates base dir to install templates into.")
+	
+	options, args = parser.parse_args()
+	
+	if not args:
+		parser.error("Must specify at least one template to package. See --help for usage instructions.")
+	return parser, (options, args)
+	
+def main():
+	parser, (options, args) = parse_args()
+	logging.basicConfig(
+		level = logging.INFO,
+		format = "%(levelname)s - %(message)s"
+	)
+   
+	# Parse environment variables given
+	env = SolrNodeEnv()
+
+	try:
+		templates_base_dir = options.templates_base_dir or \
+			env['fs']['templates_base_dir']
+	except KeyError, exc:
+		parser.error("fs.templates_base_dir is not defined. Use --help for usage instructions.")
+		
+	pkg_name = "{0}-{1}-{2}.tar.gz".format(
+		args[0], datetime.now().strftime("%Y-%m-%d_%H:%M:%S"), getpass.getuser())
+	
+	ofh = tarfile.open(pkg_name, mode="w:gz")
+	
+	logging.info("Creating package '%s'...", pkg_name)
+	
+	with cwd(templates_base_dir):
+		for arg in args:
+			arg_dir = arg
+			ofh.add(arg_dir)
+		
+	ofh.close()
+	
+	logging.info("All done.")
+	
+if __name__ == "__main__":
+	sys.exit(main())

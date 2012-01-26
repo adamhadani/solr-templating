@@ -81,8 +81,7 @@ class SupervisordNodeCtl(NodeCtl):
             cmd,
             self.opts['instance_name']
             ])
-        
-        
+               
 class TomcatNodeCtl(NodeCtl):
     """Encapsulate environment and logic for controlling 
     tomcat service runtime"""
