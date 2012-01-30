@@ -1,8 +1,8 @@
-# solrnode-utils
+# solr-templating
 
-### A set of utility scripts for templating solr configurations and working with multi-instance solr installations
+## A framework for templating solr configurations and working with multi-instance solr installations
 
-solrnode-utils is a framework which encompasses a few Python and shell scripts that allow you to create templates of solr-backed search services,
+solr-templating is a framework which encompasses a few Python and shell scripts that allow you to create templates of solr-backed search services,
 package & deploy these templates, and use them to create any number of runnable instances on a production environment.
 
 ## Requirements
@@ -109,7 +109,7 @@ Assuming all previous templates are in current working dir:
 
 	This will result in a .tgz file containing all specified templates, stamped with the current timestamp and username by default.
 
-* To deploy on remote machine (where solrnode-utils has also been installed):
+* To deploy on remote machine (where solr-templating has also been installed):
 
 	```bash
 	solrnode-install-pkg <package_file.tgz>
@@ -131,7 +131,7 @@ the git setuptools package installed: [setuptools-git](http://pypi.python.org/py
 
 ## Credits
 
-solrnode-utils was created by [Adam Ever-Hadani](http://github.com/adamhadani/)
+solr-templating was created by [Adam Ever-Hadani](http://github.com/adamhadani/)
 
 ## Contact
 
@@ -143,4 +143,4 @@ Adam Ever-Hadani
 
 ## License
 
-solrnode-utils is available under the Apache license 2.0. See the LICENSE file for more info.
+This software is available under the Apache license 2.0. See the LICENSE file for more info.
