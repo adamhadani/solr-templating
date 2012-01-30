@@ -33,7 +33,7 @@ def parse_args():
     usage = "%prog [-t <template_type>] <template_name> [<template_2_name> <template_3_name> ...]"
     parser = OptionParser(usage=usage)
 
-    tmpls_dir = pkg_resources.resource_filename('solrnode', 'templates')
+    tmpls_dir = pkg_resources.resource_filename('solrnode.templating', 'templates')
     templates = map(os.path.basename,glob.glob(tmpls_dir+"/*"))
     
     parser.add_option("-t", "--template-type", dest="tmpl_type", default='default',
@@ -54,11 +54,12 @@ def main():
         format = "%(levelname)s - %(message)s"
     )
 
-    tmpl_type_dir = pkg_resources.resource_filename('solrnode',
+    tmpl_type_dir = pkg_resources.resource_filename('solrnode.templating',
         os.path.join('templates', options.tmpl_type))
 
     if not os.path.isdir(tmpl_type_dir):
-        parser.error("Supplied template type is invalid.")
+        parser.error("Supplied template type (%s) is invalid." % \
+            options.tmpl_type)
 
     for tmpl_name in args:
         tmpl_dir = tmpl_name
