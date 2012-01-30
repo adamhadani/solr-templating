@@ -1,4 +1,10 @@
 <solr persistent="true" sharedLib="lib">
+ 
+ <!-- you can use this property e.g in your schema.xml
+      to define various fields as stored="${is_debug}",
+      so you can inspect their content in development. -->
+ <property name="is_debug" value="false" />
+
  <cores adminPath="/admin/cores" defaultCoreName="core0">
   <core name="core0" instanceDir="core0" />
  </cores>
