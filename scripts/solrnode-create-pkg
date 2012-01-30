@@ -22,7 +22,7 @@ import logging
 from datetime import datetime
 from optparse import OptionParser
 
-from solrnode.env import cwd, SolrNodeEnv, TemplateManifest
+from solrnode.templating.env import cwd, SolrNodeEnv, TemplateManifest
 
 def parse_args():
 	usage = "%prog <template> [<template_2> ...]"

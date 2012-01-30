@@ -20,7 +20,7 @@ import shutil
 import logging
 from optparse import OptionParser
 
-from solrnode.env import SolrNodeEnv, TemplateManifest
+from solrnode.templating.env import SolrNodeEnv, TemplateManifest
 
 
 def parse_args():

@@ -20,8 +20,8 @@ import subprocess
 from optparse import OptionParser
 import logging
 
-from solrnode.env import SolrNodeEnv
-from solrnode.ctl import TomcatNodeCtl, SupervisordNodeCtl
+from solrnode.templating.env import SolrNodeEnv
+from solrnode.templating.ctl import TomcatNodeCtl, SupervisordNodeCtl
     
 def parse_args():
     usage = "%prog <start|stop|status|kill> <instance_name>"

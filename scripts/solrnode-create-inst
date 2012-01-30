@@ -26,7 +26,7 @@ from optparse import OptionParser
 
 import jinja2
 
-from solrnode.env import SolrNodeEnv, TemplateManifest
+from solrnode.templating.env import SolrNodeEnv, TemplateManifest
 
 def render_templates(inst_dir, env):
     """Walk over instance dir, and render every .tmpl file into

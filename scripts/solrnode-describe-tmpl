@@ -19,7 +19,7 @@ import sys
 import logging
 from optparse import OptionParser
 
-from solrnode.env import TemplateManifest, SolrNodeEnv
+from solrnode.templating.env import TemplateManifest, SolrNodeEnv
 
 def parse_args():
 	usage = "%prog <template_name_or_dir>"
