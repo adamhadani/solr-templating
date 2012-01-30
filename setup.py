@@ -19,12 +19,12 @@ from setuptools import setup, find_packages
 SCRIPT_FILES = glob.glob('scripts/*')
 
 setup(  
-    name         = 'solrnode-utils',
+    name         = 'solr-templating',
     version      = '0.1',
     description  = 'Solr-backed search service templating and control framework',
     author       = 'Adam Ever-Hadani',
     author_email = 'adamhadani@gmail.com',
-    url          = 'http://github.com/adamhadani/solrnode-utils',
+    url          = 'http://github.com/adamhadani/solr-templating',
     keywords     = ['solr', 'search' ],
 
     classifiers = [
